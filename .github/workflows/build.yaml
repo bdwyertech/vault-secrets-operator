@@ -156,33 +156,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kind-k8s-version: [1.22.17, 1.23.17, 1.24.13, 1.25.9, 1.26.4, 1.27.2]
-        vault-version: [1.11.10, 1.12.6, 1.13.2]
+        kind-k8s-version: [1.23.17, 1.24.13, 1.25.9, 1.26.4, 1.27.2]
+        vault-version: [1.11.11, 1.12.7, 1.13.3, 1.14.0-rc1]
         # Note: The below exclude and includes are a bit awkward, but they
         # allow us to exclude the combos we don't really need. We want to test
         # the operator with the different k8s versions, and with the different
         # vault versions, but we don't care about testing all the k8s versions
         # against all the vault versions.
         # Combos to exclude:
-        #   kind-k8s-version: [1.22.17, 1.23.17, 1.24.13, 1.25.9, 1.26.4]
-        #   vault-version: [1.11.10, 1.12.6]
+        #   kind-k8s-version: [1.23.17, 1.24.13, 1.25.9, 1.26.4]
+        #   vault-version: [1.11.11, 1.12.7, 1.13.3]
         exclude:
           - kind-k8s-version: 1.26.4
           - kind-k8s-version: 1.25.9
           - kind-k8s-version: 1.24.13
           - kind-k8s-version: 1.23.17
-          - kind-k8s-version: 1.22.17
         include:
           - kind-k8s-version: 1.26.4
-            vault-version: 1.13.2
+            vault-version: 1.14.0-rc1
           - kind-k8s-version: 1.25.9
-            vault-version: 1.13.2
+            vault-version: 1.14.0-rc1
           - kind-k8s-version: 1.24.13
-            vault-version: 1.13.2
+            vault-version: 1.14.0-rc1
           - kind-k8s-version: 1.23.17
-            vault-version: 1.13.2
+            vault-version: 1.14.0-rc1
           - kind-k8s-version: 1.22.17
-            vault-version: 1.13.2
+            vault-version: 1.14.0-rc1
 
     name: Integration vault:${{ matrix.vault-version }} kind ${{ matrix.kind-k8s-version }}
     steps:
@@ -223,7 +222,7 @@ jobs:
           make integration-test-helm SUPPRESS_TF_OUTPUT=true EXPORT_KIND_LOGS_ROOT=${{ steps.create_kind_export_log_root.outputs.log_root }}
       - name: OSS tests using Kustomize
         # Ideally we only need to test the latest release of OSS Vault.
-        if: ${{ matrix.vault-version == '1.13.2' }}
+        if: ${{ matrix.vault-version == '1.14.0-rc1' }}
         env:
           INTEGRATION_TESTS: true
           VAULT_IMAGE_TAG: ${{ matrix.vault-version }}
@@ -231,7 +230,7 @@ jobs:
           make integration-test SUPPRESS_TF_OUTPUT=true EXPORT_KIND_LOGS_ROOT=${{ steps.create_kind_export_log_root.outputs.log_root }}
       - name: ENT tests using Kustomize
         # TODO: When the VDS integration test supports Helm we test against one version of (ENT) Vault like the other tests.
-        # if: ${{ matrix.vault-version == '1.13.2' }}
+        # if: ${{ matrix.vault-version == '1.14.0-rc1' }}
         env:
           INTEGRATION_TESTS: true
           VAULT_LICENSE_CI: ${{ secrets.VAULT_LICENSE_CI }}
@@ -240,7 +239,7 @@ jobs:
           make integration-test-ent SUPPRESS_TF_OUTPUT=true EXPORT_KIND_LOGS_ROOT=${{ steps.create_kind_export_log_root.outputs.log_root }}
       - name: ENT tests using Helm
         # TODO: When the VDS integration test supports Helm swap the matrix filter so this test runs the full matrix.
-        if: ${{ matrix.vault-version == '1.13.2' }}
+        if: ${{ matrix.vault-version == '1.14.0-rc1' }}
         env:
           INTEGRATION_TESTS: true
           VAULT_LICENSE_CI: ${{ secrets.VAULT_LICENSE_CI }}
